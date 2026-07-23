@@ -1,0 +1,1465 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#05060a">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>AFTERSHIFT TRADE JOURNAL</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#05060a;
+    --bg2:#090b12;
+    --panel:#0c0f1a;
+    --panel2:#10131f;
+    --line:rgba(120,170,255,0.14);
+    --line-soft:rgba(120,170,255,0.07);
+    --cyan:#4ac8f0;
+    --violet:#9d8cf5;
+    --amber:#ffb454;
+    --pos:#3ddc84;
+    --neg:#ff4d6d;
+    --text:#e9f1ff;
+    --muted:#5f6c8a;
+    --muted2:#414d68;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:'Space Grotesk',sans-serif;overscroll-behavior-y:contain;-webkit-overflow-scrolling:touch;}
+  body{
+    min-height:100vh;
+    background-image:
+      radial-gradient(ellipse 900px 500px at 20% -10%, rgba(74,200,240,0.08), transparent 60%),
+      radial-gradient(ellipse 700px 500px at 100% 0%, rgba(157,140,245,0.07), transparent 60%),
+      repeating-linear-gradient(0deg, rgba(120,170,255,0.025) 0px, rgba(120,170,255,0.025) 1px, transparent 1px, transparent 32px),
+      repeating-linear-gradient(90deg, rgba(120,170,255,0.025) 0px, rgba(120,170,255,0.025) 1px, transparent 1px, transparent 32px);
+    padding-bottom:96px;
+    animation:appBoot 0.25s ease;
+  }
+  @keyframes appBoot{ 0%{opacity:0;} 100%{opacity:1;} }
+  .mono{font-family:'JetBrains Mono',monospace;}
+  ::selection{background:rgba(74,200,240,0.3);}
+
+  /* header */
+  .topbar{
+    position:sticky; top:0; z-index:40;
+    background:rgba(5,6,10,0.82); backdrop-filter:blur(14px);
+    border-bottom:1px solid var(--line);
+    padding:calc(env(safe-area-inset-top) + 14px) 16px 10px;
+  }
+  .brand{display:flex; align-items:center; gap:10px;}
+  .brand-mark{
+    width:34px;height:34px;border-radius:9px;
+    background:linear-gradient(135deg, var(--cyan), var(--violet));
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:0 0 18px rgba(74,200,240,0.35);
+    flex-shrink:0;
+  }
+  .brand-mark svg{width:18px;height:18px;}
+  .brand-name{font-weight:700; font-size:16px; letter-spacing:0.04em;}
+  .brand-sub{font-size:10px; color:var(--muted); letter-spacing:0.14em; text-transform:uppercase; margin-top:1px;}
+  .brand-right{margin-left:auto; display:flex; align-items:center; gap:6px;}
+  .cur-toggle{
+    display:flex; align-items:center; gap:5px; cursor:pointer; user-select:none;
+    border:1px solid var(--line); border-radius:999px; padding:4px 7px;
+    background:var(--panel); flex-shrink:0;
+    transition:transform 0.12s ease;
+  }
+  .cur-toggle:active{ transform:scale(0.94); }
+  .cur-toggle .cur-label{
+    font-family:'JetBrains Mono',monospace; font-size:9px; font-weight:700; letter-spacing:0.03em; color:var(--muted2);
+    transition:color 0.2s ease;
+  }
+  .cur-toggle .cur-label.on{color:var(--cyan);}
+  .cur-switch{
+    width:28px; height:15px; border-radius:999px; background:rgba(120,140,180,0.18);
+    border:1px solid var(--line); position:relative; flex-shrink:0; transition:background 0.25s ease, border-color 0.25s ease;
+  }
+  .cur-switch.active{background:rgba(74,200,240,0.18); border-color:rgba(74,200,240,0.5);}
+  .cur-knob{
+    position:absolute; top:1px; left:1px; width:11px; height:11px; border-radius:50%;
+    background:var(--muted); transition:transform 0.28s cubic-bezier(.34,1.56,.64,1), background 0.25s ease, box-shadow 0.25s ease;
+  }
+  .cur-switch.active .cur-knob{ transform:translateX(13px); background:var(--cyan); box-shadow:0 0 8px var(--cyan); }
+  .icon-btn{
+    width:30px;height:30px;border-radius:8px;border:1px solid var(--line);
+    background:var(--panel); display:flex;align-items:center;justify-content:center;
+    color:var(--muted); cursor:pointer; flex-shrink:0;
+    transition:background 0.18s ease, color 0.18s ease, transform 0.12s ease, border-color 0.18s ease;
+  }
+  .icon-btn:active{background:var(--panel2); color:var(--cyan); transform:scale(0.92);}
+  .icon-btn.spin svg{animation:spin 0.7s linear;}
+  @keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+
+  @media (max-width: 380px){ .brand-sub{ display:none; } }
+
+  /* tabs */
+  .tabs{display:flex; gap:6px; margin-top:12px; overflow-x:auto; scrollbar-width:none; -webkit-overflow-scrolling:touch;}
+  .tabs::-webkit-scrollbar{display:none;}
+  .tab{
+    flex-shrink:0; font-size:12.5px; font-weight:600; letter-spacing:0.02em;
+    padding:8px 14px; border-radius:8px; color:var(--muted); border:1px solid transparent;
+    cursor:pointer; white-space:nowrap;
+    transition:color 0.2s ease, background 0.2s ease, border-color 0.2s ease, transform 0.12s ease;
+  }
+  .tab:active{ transform:scale(0.95); }
+  .tab.active{color:var(--cyan); background:rgba(74,200,240,0.08); border-color:rgba(74,200,240,0.3);}
+
+  .wrap{padding:16px; max-width:640px; margin:0 auto;}
+  .view{display:none;}
+  .view.active{display:block; animation:fadeIn 0.3s cubic-bezier(.22,1,.36,1);}
+  @keyframes fadeIn{from{opacity:0; transform:translateY(4px)}to{opacity:1; transform:translateY(0)}}
+
+  /* corner-bracket panel = signature element */
+  .panel{
+    position:relative;
+    background:
+      linear-gradient(180deg, rgba(74,200,240,0.06), transparent 45%),
+      linear-gradient(180deg, var(--panel), var(--panel2));
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:18px;
+    margin-bottom:14px;
+    overflow:hidden;
+    transform:translateZ(0);
+  }
+  .panel::before,.panel::after{
+    content:''; position:absolute; width:10px; height:10px;
+    border-top:1.5px solid var(--cyan); border-left:1.5px solid var(--cyan);
+    top:-1px; left:-1px; opacity:0.7;
+  }
+  .panel::after{
+    left:auto; right:-1px; top:auto; bottom:-1px;
+    border-top:none; border-left:none;
+    border-bottom:1.5px solid var(--violet); border-right:1.5px solid var(--violet);
+  }
+  .eyebrow{font-size:10px; letter-spacing:0.16em; color:var(--muted); text-transform:uppercase; font-weight:600; display:flex; align-items:center; justify-content:space-between;}
+
+  .field{margin-bottom:12px;}
+  .field label{font-size:10.5px; color:var(--muted); text-transform:uppercase; letter-spacing:0.08em; font-weight:600; display:block; margin-bottom:6px;}
+  .field input, .field select, .field textarea{
+    width:100%; background:var(--panel); border:1px solid var(--line); border-radius:9px; padding:11px 12px;
+    color:var(--text); font-size:13.5px; font-family:'JetBrains Mono',monospace; outline:none;
+    transition:border-color 0.18s ease, box-shadow 0.18s ease;
+  }
+  .field textarea{font-family:'Space Grotesk',sans-serif; resize:vertical; min-height:60px;}
+  .field select{font-family:'Space Grotesk',sans-serif;}
+  .field input:focus, .field select:focus, .field textarea:focus{border-color:var(--cyan); box-shadow:0 0 0 3px rgba(74,200,240,0.12);}
+  .row2{display:flex; gap:10px;}
+  .row2 .field{flex:1;}
+  .row3{display:flex; gap:8px;}
+  .row3 .field{flex:1;}
+
+  .seg{display:flex; border:1px solid var(--line); border-radius:9px; overflow:hidden;}
+  .seg-opt{flex:1; text-align:center; padding:9px; font-size:12px; font-weight:600; color:var(--muted); cursor:pointer; transition:background 0.2s ease, color 0.2s ease;}
+  .seg-opt.active{background:rgba(74,200,240,0.12); color:var(--cyan);}
+  .seg-opt.long.active{background:rgba(61,220,132,0.12); color:var(--pos);}
+  .seg-opt.short.active{background:rgba(255,77,109,0.12); color:var(--neg);}
+  .seg-opt.strat-scalp.active{background:rgba(255,180,84,0.12); color:var(--amber);}
+  .seg-opt.strat-intraday.active{background:rgba(74,200,240,0.12); color:var(--cyan);}
+  .seg-opt.strat-swing.active{background:rgba(157,140,245,0.12); color:var(--violet);}
+
+  .strategy-badge{font-size:9px; font-weight:700; letter-spacing:0.04em; padding:3px 7px; border-radius:6px; flex-shrink:0;}
+  .strategy-badge.scalp{color:var(--amber); background:rgba(255,180,84,0.12); border:1px solid rgba(255,180,84,0.3);}
+  .strategy-badge.intraday{color:var(--cyan); background:rgba(74,200,240,0.12); border:1px solid rgba(74,200,240,0.3);}
+  .strategy-badge.swing{color:var(--violet); background:rgba(157,140,245,0.12); border:1px solid rgba(157,140,245,0.3);}
+  .hold-status{font-size:10px; margin-top:6px; display:flex; align-items:center; gap:4px;}
+  .hold-status.ok{color:var(--muted);}
+  .hold-status.warn{color:var(--amber); font-weight:600;}
+  .hold-status.over{color:var(--neg); font-weight:700;}
+  .floating-pnl{font-family:'JetBrains Mono',monospace; font-size:11px; margin-top:6px; padding-top:6px; border-top:1px dashed var(--line-soft); display:flex; align-items:center; justify-content:space-between;}
+  .floating-pnl .fp-label{font-size:9px; color:var(--muted2); text-transform:uppercase; letter-spacing:0.06em;}
+
+  .coin-results{
+    max-height:200px; overflow-y:auto; -webkit-overflow-scrolling:touch; border:1px solid var(--line); border-radius:10px; margin-top:6px;
+    background:var(--panel);
+  }
+  .coin-item{display:flex; align-items:center; gap:10px; padding:9px 10px; cursor:pointer; border-bottom:1px solid var(--line-soft); transition:background 0.15s ease;}
+  .coin-item:last-child{border-bottom:none;}
+  .coin-item:active{background:var(--panel2);}
+  .coin-item img{width:22px;height:22px;border-radius:50%; flex-shrink:0; background:var(--panel2);}
+  .coin-item-name{font-size:12px; font-weight:600;}
+  .coin-item-sym{font-size:9.5px; color:var(--muted); font-family:'JetBrains Mono',monospace;}
+  .coin-selected{
+    display:flex; align-items:center; gap:8px; padding:9px 11px; background:rgba(74,200,240,0.08);
+    border:1px solid rgba(74,200,240,0.3); border-radius:9px; margin-top:6px; font-size:12px;
+  }
+  .coin-selected img{width:20px;height:20px;border-radius:50%;}
+  .coin-clear{margin-left:auto; color:var(--muted); cursor:pointer; font-size:10.5px;}
+
+  .rr-chips{display:flex; gap:8px; margin-bottom:4px;}
+  .rr-chip{
+    flex:1; text-align:center; padding:9px 4px; border-radius:9px; border:1px solid var(--line);
+    background:var(--panel); font-family:'JetBrains Mono',monospace; font-size:12.5px; font-weight:700; color:var(--muted);
+    cursor:pointer; transition:background 0.18s ease, color 0.18s ease, border-color 0.18s ease, transform 0.12s ease;
+  }
+  .rr-chip:active{ transform:scale(0.94); }
+  .rr-chip.active{background:rgba(74,200,240,0.12); color:var(--cyan); border-color:rgba(74,200,240,0.4);}
+
+  .btn-primary{
+    width:100%; background:linear-gradient(135deg, var(--cyan), var(--violet)); color:#05060a; border:none;
+    border-radius:10px; padding:13px; font-weight:700; font-size:13.5px; margin-top:6px;
+    transition:transform 0.13s ease, opacity 0.18s ease;
+  }
+  .btn-primary:active{ transform:scale(0.98); }
+  .btn-primary:disabled{opacity:0.4;}
+  .btn-ghost{
+    width:100%; background:none; color:var(--neg); border:1px solid rgba(255,93,122,0.3);
+    border-radius:10px; padding:11px; font-weight:600; font-size:12.5px; margin-top:8px;
+    transition:transform 0.13s ease, background 0.18s ease;
+  }
+  .btn-ghost:active{ transform:scale(0.98); background:rgba(255,77,109,0.08); }
+  .btn-outline{
+    width:100%; background:none; color:var(--cyan); border:1px solid rgba(74,200,240,0.35);
+    border-radius:10px; padding:11px; font-weight:600; font-size:12.5px; margin-top:8px;
+    transition:transform 0.13s ease, background 0.18s ease;
+  }
+  .btn-outline:active{ transform:scale(0.98); background:rgba(74,200,240,0.08); }
+  .hint{font-size:10.5px; color:var(--muted2); margin-top:4px; line-height:1.4;}
+
+  /* calculator result */
+  .result-grid{display:grid; grid-template-columns:1fr 1fr; gap:1px; background:var(--line); border:1px solid var(--line); border-radius:14px; overflow:hidden; margin-bottom:14px;}
+  .result-cell{background:var(--panel); padding:14px 16px;}
+  .result-cell.wide{grid-column:1/-1;}
+  .result-label{font-size:10px; letter-spacing:0.1em; color:var(--muted); text-transform:uppercase; font-weight:600;}
+  .result-value{font-family:'JetBrains Mono',monospace; font-size:17px; font-weight:700; margin-top:6px;}
+  .result-value.pos{color:var(--pos);}
+  .result-value.neg{color:var(--neg);}
+  .result-value.tp{color:var(--cyan);}
+
+  /* stat grid (Stats tab) */
+  .stat-grid{display:grid; grid-template-columns:1fr 1fr; gap:1px; background:var(--line); border:1px solid var(--line); border-radius:14px; overflow:hidden; margin-bottom:14px;}
+  .stat-cell{background:var(--panel); padding:14px 16px;}
+  .stat-label{font-size:10px; letter-spacing:0.1em; color:var(--muted); text-transform:uppercase; font-weight:600;}
+  .stat-value{font-family:'JetBrains Mono',monospace; font-size:18px; font-weight:700; margin-top:6px;}
+  .stat-value.pos{color:var(--pos);}
+  .stat-value.neg{color:var(--neg);}
+
+  /* journal rows */
+  .toolbar{display:flex; gap:8px; margin-bottom:12px;}
+  .search{
+    flex:1; display:flex; align-items:center; gap:8px; background:var(--panel); border:1px solid var(--line);
+    border-radius:10px; padding:9px 12px;
+  }
+  .search input{background:none; border:none; outline:none; color:var(--text); font-size:13px; width:100%; font-family:'Space Grotesk',sans-serif;}
+  .search input::placeholder{color:var(--muted2);}
+  select.sortsel{
+    background:var(--panel); border:1px solid var(--line); color:var(--text); border-radius:10px;
+    padding:0 10px; font-size:12.5px; font-family:'Space Grotesk',sans-serif;
+  }
+
+  .trade-card{
+    background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:13px 14px; margin-bottom:9px;
+    transition:background 0.18s ease, transform 0.12s ease, border-color 0.18s ease;
+  }
+  .trade-card:active{ background:var(--panel2); transform:scale(0.99); }
+  .trade-top{display:flex; align-items:center; gap:8px;}
+  .trade-side{
+    font-size:9px; font-weight:700; letter-spacing:0.04em; padding:3px 7px; border-radius:6px; flex-shrink:0;
+  }
+  .trade-side.long{color:var(--pos); background:rgba(61,220,132,0.12); border:1px solid rgba(61,220,132,0.3);}
+  .trade-side.short{color:var(--neg); background:rgba(255,77,109,0.12); border:1px solid rgba(255,77,109,0.3);}
+  .trade-sym{font-weight:700; font-size:13.5px;}
+  .trade-status{font-size:9px; color:var(--muted); border:1px solid var(--line); padding:2px 6px; border-radius:6px; margin-left:auto;}
+  .trade-sub{font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--muted); margin-top:6px;}
+  .trade-thesis{font-size:11.5px; color:var(--text); margin-top:6px; line-height:1.4; opacity:0.85;}
+  .trade-result{display:flex; align-items:center; justify-content:space-between; margin-top:8px; padding-top:8px; border-top:1px solid var(--line-soft);}
+  .trade-r{font-family:'JetBrains Mono',monospace; font-weight:700; font-size:13px;}
+  .trade-date{font-size:10px; color:var(--muted2);}
+
+  .empty-panel{
+    border:1px dashed var(--line); border-radius:14px; padding:36px 20px; text-align:center; color:var(--muted);
+  }
+  .empty-title{font-weight:700; color:var(--text); font-size:14px; margin-bottom:6px;}
+  .empty-sub{font-size:12px; line-height:1.5; max-width:280px; margin:0 auto;}
+
+  .fab{
+    position:fixed; left:16px; right:16px; bottom:16px; max-width:608px; margin:0 auto; z-index:30;
+    background:linear-gradient(135deg, var(--cyan), var(--violet)); color:#05060a;
+    border:none; border-radius:13px; padding:14px; font-weight:700; font-size:14px;
+    display:flex; align-items:center; justify-content:center; gap:8px;
+    box-shadow:0 8px 30px rgba(74,200,240,0.25);
+    transition:transform 0.15s ease, box-shadow 0.2s ease;
+  }
+  .fab:active{transform:scale(0.96);}
+
+  /* modal */
+  .overlay{
+    position:fixed; inset:0; background:rgba(3,4,8,0.7); z-index:60;
+    display:none; align-items:flex-end;
+  }
+  .overlay.show{display:flex; backdrop-filter:blur(4px); animation:overlayFade 0.18s ease;}
+  @keyframes overlayFade{ from{background:rgba(3,4,8,0);} to{background:rgba(3,4,8,0.7);} }
+  .sheet{
+    width:100%; max-width:640px; margin:0 auto; background:var(--bg2); border:1px solid var(--line);
+    border-bottom:none; border-radius:18px 18px 0 0; padding:18px 18px calc(env(safe-area-inset-bottom) + 18px);
+    max-height:88vh; overflow-y:auto; -webkit-overflow-scrolling:touch;
+    animation:sheetIn 0.22s cubic-bezier(.22,1,.36,1);
+  }
+  @keyframes sheetIn{ from{transform:translateY(24px);} to{transform:translateY(0);} }
+  .sheet-head{display:flex; align-items:center; margin-bottom:14px;}
+  .sheet-title{font-weight:700; font-size:15px; flex:1;}
+  .close-x{color:var(--muted); cursor:pointer; padding:4px; transition:color 0.18s ease, transform 0.15s ease;}
+  .close-x:active{ color:var(--text); transform:scale(0.85) rotate(90deg); }
+
+  .toast{
+    position:fixed; top:14px; left:50%; transform:translateX(-50%) translateY(-60px); z-index:80;
+    background:var(--panel2); border:1px solid var(--line); color:var(--text); font-size:12.5px;
+    padding:10px 16px; border-radius:10px; transition:transform 0.3s ease; box-shadow:0 8px 24px rgba(0,0,0,0.4);
+    max-width:88vw; text-align:center;
+  }
+  .toast.show{transform:translateX(-50%) translateY(0);}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="brand">
+    <div class="brand-mark">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M4 17L10 11L14 15L20 5" stroke="#05060a" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+    <div>
+      <div class="brand-name">AFTERSHIFT</div>
+      <div class="brand-sub">Trade Journal</div>
+    </div>
+    <div class="brand-right">
+      <div class="cur-toggle" id="curToggle">
+        <span class="cur-label" id="curLabelUsd">USD</span>
+        <div class="cur-switch" id="curSwitch"><div class="cur-knob"></div></div>
+        <span class="cur-label" id="curLabelIdr">IDR</span>
+      </div>
+      <div class="icon-btn" id="refreshBtn">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M21 12a9 9 0 1 1-2.64-6.36" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M21 3v6h-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <div class="icon-btn" id="menuBtn">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="5" cy="12" r="1.8" fill="currentColor"/><circle cx="12" cy="12" r="1.8" fill="currentColor"/><circle cx="19" cy="12" r="1.8" fill="currentColor"/></svg>
+      </div>
+    </div>
+  </div>
+  <div class="tabs">
+    <div class="tab active" data-tab="calc">Calculator</div>
+    <div class="tab" data-tab="journal">Journal</div>
+    <div class="tab" data-tab="stats">Stats</div>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <!-- CALCULATOR -->
+  <div class="view active" id="view-calc">
+    <div class="panel">
+      <div class="eyebrow"><span>Risk & Take-Profit</span><span id="dataSrcTag" style="color:var(--muted2);">R:R Calculator</span></div>
+      <div class="row2">
+        <div class="field">
+          <label>Direction</label>
+          <div class="seg">
+            <div class="seg-opt long active" data-side="long">Long</div>
+            <div class="seg-opt short" data-side="short">Short</div>
+          </div>
+        </div>
+      </div>
+      <div class="field">
+        <label>Strategi</label>
+        <div class="seg">
+          <div class="seg-opt strat-scalp active" data-strategy="scalp">Scalp</div>
+          <div class="seg-opt strat-intraday" data-strategy="intraday">Intraday</div>
+          <div class="seg-opt strat-swing" data-strategy="swing">Swing</div>
+        </div>
+      </div>
+      <div class="hint" id="strategyHint" style="margin-bottom:8px;">Max hold Scalp: 1 jam — sesuai rencana disiplin kamu.</div>
+      <div class="field">
+        <label>Symbol (cari coin — CoinGecko)</label>
+        <input id="calcSymbol" placeholder="e.g. bitcoin, solana..." autocomplete="off" />
+        <div class="coin-results" id="calcCoinResults" style="display:none;"></div>
+        <div class="coin-selected" id="calcCoinSelected" style="display:none;"></div>
+      </div>
+      <div class="row2">
+        <div class="field">
+          <label id="calcBalanceLabel">Account Balance ($)</label>
+          <input id="calcBalance" type="number" inputmode="decimal" placeholder="0.00" />
+        </div>
+        <div class="field">
+          <label>Risk per Trade (%)</label>
+          <input id="calcRiskPct" type="number" inputmode="decimal" placeholder="1.0" value="1" />
+        </div>
+      </div>
+      <div class="row2">
+        <div class="field">
+          <label>Target R:R</label>
+          <div class="rr-chips" id="rrChips">
+            <div class="rr-chip active" data-rr="1">1:1</div>
+            <div class="rr-chip" data-rr="2">1:2</div>
+            <div class="rr-chip" data-rr="3">1:3</div>
+          </div>
+        </div>
+      </div>
+      <div class="row2">
+        <div class="field">
+          <label id="calcEntryLabel">Entry Price ($)</label>
+          <input id="calcEntry" type="number" inputmode="decimal" placeholder="0.00" />
+        </div>
+        <div class="field">
+          <label id="calcSlLabel">Stop Loss ($)</label>
+          <input id="calcSl" type="number" inputmode="decimal" placeholder="0.00" />
+        </div>
+      </div>
+      <div class="hint" id="calcHint">Isi Entry & SL yang udah kamu tentuin — TP dan ukuran posisi dihitung otomatis dari situ.</div>
+    </div>
+
+    <div class="result-grid" id="resultGrid" style="display:none;">
+      <div class="result-cell">
+        <div class="result-label">Take Profit</div>
+        <div class="result-value tp mono" id="resTp">—</div>
+      </div>
+      <div class="result-cell">
+        <div class="result-label">Risk Amount</div>
+        <div class="result-value neg mono" id="resRisk">—</div>
+      </div>
+      <div class="result-cell">
+        <div class="result-label">Position Size</div>
+        <div class="result-value mono" id="resSize">—</div>
+      </div>
+      <div class="result-cell">
+        <div class="result-label">Potential Reward</div>
+        <div class="result-value pos mono" id="resReward">—</div>
+      </div>
+      <div class="result-cell wide">
+        <div class="result-label">Notional Position Value</div>
+        <div class="result-value mono" id="resNotional">—</div>
+      </div>
+    </div>
+
+    <button class="btn-outline" id="saveToJournalBtn" style="display:none;">+ Simpan ke Journal</button>
+  </div>
+
+  <!-- JOURNAL -->
+  <div class="view" id="view-journal">
+    <div class="toolbar">
+      <div class="search">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" style="color:var(--muted2)"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2"/><path d="M21 21l-4.3-4.3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        <input id="jSearch" placeholder="Search symbol..." />
+      </div>
+      <select class="sortsel" id="jFilter">
+        <option value="all">Semua</option>
+        <option value="open">Open</option>
+        <option value="closed">Closed</option>
+      </select>
+    </div>
+    <div id="journalList"></div>
+    <div class="empty-panel" id="journalEmpty" style="display:none;">
+      <div class="empty-title">Belum ada trade dicatat</div>
+      <div class="empty-sub">Hitung R:R di tab Calculator, lalu simpan ke Journal — atau tambah manual dari tombol bawah.</div>
+    </div>
+  </div>
+
+  <!-- STATS -->
+  <div class="view" id="view-stats">
+    <div class="panel">
+      <div class="eyebrow">Equity Curve (R)</div>
+      <canvas id="equityCanvas" width="1160" height="200" style="width:100%; height:100px; display:block; margin-top:10px; transform:translateZ(0);"></canvas>
+      <div class="empty-sub" id="equityEmpty" style="display:none; text-align:center; padding:20px 0;">Belum ada trade closed — equity curve muncul setelah kamu tutup trade pertama.</div>
+    </div>
+    <div class="stat-grid">
+      <div class="stat-cell">
+        <div class="stat-label">Win Rate</div>
+        <div class="stat-value mono" id="statWinRate">—</div>
+      </div>
+      <div class="stat-cell">
+        <div class="stat-label">Total Trades</div>
+        <div class="stat-value mono" id="statTotal">0</div>
+      </div>
+      <div class="stat-cell">
+        <div class="stat-label">Avg R (Win)</div>
+        <div class="stat-value mono pos" id="statAvgWin">—</div>
+      </div>
+      <div class="stat-cell">
+        <div class="stat-label">Avg R (Loss)</div>
+        <div class="stat-value mono neg" id="statAvgLoss">—</div>
+      </div>
+      <div class="stat-cell">
+        <div class="stat-label">Expectancy / Trade</div>
+        <div class="stat-value mono" id="statExpectancy">—</div>
+      </div>
+      <div class="stat-cell">
+        <div class="stat-label">Total R</div>
+        <div class="stat-value mono" id="statTotalR">—</div>
+      </div>
+    </div>
+
+    <div class="panel" id="strategyBreakdownPanel" style="display:none;">
+      <div class="eyebrow">Scalp vs Intraday vs Swing</div>
+      <div style="margin-top:12px; display:flex; flex-direction:column; gap:12px;">
+        <div>
+          <div class="strategy-badge scalp" style="display:inline-block; margin-bottom:6px;">SCALP</div>
+          <div class="trade-sub" id="statScalpSummary" style="margin-top:0;">—</div>
+        </div>
+        <div>
+          <div class="strategy-badge intraday" style="display:inline-block; margin-bottom:6px;">INTRADAY</div>
+          <div class="trade-sub" id="statIntradaySummary" style="margin-top:0;">—</div>
+        </div>
+        <div>
+          <div class="strategy-badge swing" style="display:inline-block; margin-bottom:6px;">SWING</div>
+          <div class="trade-sub" id="statSwingSummary" style="margin-top:0;">—</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<button class="fab" id="fabAdd">
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="#05060a" stroke-width="2.6" stroke-linecap="round"/></svg>
+  <span>Tambah Trade</span>
+</button>
+
+<!-- Trade modal (add/edit/close) -->
+<div class="overlay" id="tradeOverlay">
+  <div class="sheet">
+    <div class="sheet-head">
+      <div class="sheet-title" id="tradeSheetTitle">Tambah Trade</div>
+      <div class="close-x" id="tradeClose">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      </div>
+    </div>
+    <div class="row2">
+      <div class="field">
+        <label>Direction</label>
+        <div class="seg">
+          <div class="seg-opt long active" data-tside="long">Long</div>
+          <div class="seg-opt short" data-tside="short">Short</div>
+        </div>
+      </div>
+    </div>
+    <div class="field">
+      <label>Strategi</label>
+      <div class="seg">
+        <div class="seg-opt strat-scalp active" data-tstrategy="scalp">Scalp</div>
+        <div class="seg-opt strat-intraday" data-tstrategy="intraday">Intraday</div>
+        <div class="seg-opt strat-swing" data-tstrategy="swing">Swing</div>
+      </div>
+    </div>
+    <div class="field">
+      <label>Symbol (cari coin — CoinGecko)</label>
+      <input id="tSymbol" placeholder="e.g. bitcoin, solana..." autocomplete="off" />
+      <div class="coin-results" id="tCoinResults" style="display:none;"></div>
+      <div class="coin-selected" id="tCoinSelected" style="display:none;"></div>
+    </div>
+    <div class="row2">
+      <div class="field">
+        <label id="tSizeLabel">Position Size ($)</label>
+        <input id="tSize" type="number" inputmode="decimal" placeholder="0.00" />
+      </div>
+    </div>
+    <div class="row3">
+      <div class="field">
+        <label id="tEntryLabel">Entry ($)</label>
+        <input id="tEntry" type="number" inputmode="decimal" placeholder="0.00" />
+      </div>
+      <div class="field">
+        <label id="tSlLabel">SL ($)</label>
+        <input id="tSl" type="number" inputmode="decimal" placeholder="0.00" />
+      </div>
+      <div class="field">
+        <label id="tTpLabel">TP ($)</label>
+        <input id="tTp" type="number" inputmode="decimal" placeholder="0.00" />
+      </div>
+    </div>
+    <div class="field">
+      <label>Alasan Masuk (Thesis)</label>
+      <textarea id="tThesis" placeholder="Kenapa kamu ambil trade ini? Setup apa yang kamu lihat?"></textarea>
+    </div>
+    <div class="field" id="tExitField" style="display:none;">
+      <label id="tExitLabel">Harga Exit ($) — isi untuk menutup trade</label>
+      <input id="tExit" type="number" inputmode="decimal" placeholder="0.00" />
+    </div>
+    <button class="btn-primary" id="tSave">Simpan Trade</button>
+    <button class="btn-outline" id="tCloseTradeBtn" style="display:none;">Tutup Trade (isi harga exit)</button>
+    <button class="btn-ghost" id="tDelete" style="display:none;">Hapus Trade</button>
+  </div>
+</div>
+
+<!-- Trading Plan settings -->
+<div class="overlay" id="planOverlay">
+  <div class="sheet">
+    <div class="sheet-head">
+      <div class="sheet-title">Trading Plan</div>
+      <div class="close-x" id="planClose">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      </div>
+    </div>
+    <div class="hint" style="margin-bottom:14px;">Batas max hold ini yang dipakai buat nge-flag trade kamu di Journal kalau kelewat rencana. Ubah sesuai gaya trading kamu sendiri.</div>
+    <div class="row3">
+      <div class="field">
+        <label>Scalp (jam)</label>
+        <input id="planScalpHours" type="number" inputmode="decimal" placeholder="1" />
+      </div>
+      <div class="field">
+        <label>Intraday (jam)</label>
+        <input id="planIntradayHours" type="number" inputmode="decimal" placeholder="24" />
+      </div>
+      <div class="field">
+        <label>Swing (hari)</label>
+        <input id="planSwingDays" type="number" inputmode="decimal" placeholder="14" />
+      </div>
+    </div>
+    <button class="btn-primary" id="planSave">Simpan Aturan</button>
+    <div class="hint" style="margin-top:14px;">
+      <strong style="color:var(--text);">Referensi timeframe (konvensi umum trading):</strong><br>
+      Scalp: 1m–5m · Intraday: 15m–1H · Swing: 4H–1D
+    </div>
+  </div>
+</div>
+
+<!-- Backup & Restore -->
+<div class="overlay" id="menuOverlay">
+  <div class="sheet">
+    <div class="sheet-head">
+      <div class="sheet-title">Backup & Restore</div>
+      <div class="close-x" id="menuClose">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      </div>
+    </div>
+    <div class="hint" style="margin-bottom:14px;">Data cuma tersimpan di browser ini. Export rutin supaya nggak hilang kalau HP di-reset atau ganti device.</div>
+    <button class="btn-outline" id="openPlanBtn">⚙ Atur Trading Plan (Max Hold)</button>
+    <button class="btn-primary" id="exportBtn" style="margin-top:14px;">Export Backup (.json)</button>
+    <button class="btn-primary" id="importBtn" style="background:var(--panel); color:var(--text); border:1px solid var(--line);">Import Backup</button>
+    <input type="file" id="importFile" accept="application/json" style="display:none;" />
+    <div class="hint" style="margin-top:10px; color:var(--neg);">⚠ Import akan menimpa semua data yang ada sekarang.</div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ---------------- Popular presets (CoinGecko ids) ---------------- */
+const PRESETS = [
+  {id:"bitcoin", symbol:"BTC", name:"Bitcoin"},
+  {id:"ethereum", symbol:"ETH", name:"Ethereum"},
+  {id:"solana", symbol:"SOL", name:"Solana"},
+  {id:"binancecoin", symbol:"BNB", name:"BNB"},
+  {id:"ripple", symbol:"XRP", name:"XRP"},
+  {id:"cardano", symbol:"ADA", name:"Cardano"},
+  {id:"dogecoin", symbol:"DOGE", name:"Dogecoin"},
+  {id:"avalanche-2", symbol:"AVAX", name:"Avalanche"},
+  {id:"chainlink", symbol:"LINK", name:"Chainlink"},
+  {id:"polkadot", symbol:"DOT", name:"Polkadot"},
+  {id:"matic-network", symbol:"MATIC", name:"Polygon"},
+  {id:"litecoin", symbol:"LTC", name:"Litecoin"},
+  {id:"tron", symbol:"TRX", name:"TRON"},
+  {id:"shiba-inu", symbol:"SHIB", name:"Shiba Inu"},
+  {id:"uniswap", symbol:"UNI", name:"Uniswap"},
+  {id:"sui", symbol:"SUI", name:"Sui"},
+  {id:"the-open-network", symbol:"TON", name:"Toncoin"},
+  {id:"pepe", symbol:"PEPE", name:"Pepe"},
+  {id:"bonk", symbol:"BONK", name:"Bonk"},
+  {id:"dogwifcoin", symbol:"WIF", name:"dogwifhat"},
+  {id:"aptos", symbol:"APT", name:"Aptos"},
+  {id:"arbitrum", symbol:"ARB", name:"Arbitrum"},
+  {id:"optimism", symbol:"OP", name:"Optimism"},
+  {id:"near", symbol:"NEAR", name:"NEAR Protocol"},
+  {id:"injective-protocol", symbol:"INJ", name:"Injective"},
+  {id:"sei-network", symbol:"SEI", name:"Sei"},
+];
+const CG_BASE = "https://api.coingecko.com/api/v3";
+const COINGECKO_DEMO_KEY = "CG-erufvnoBwgSbzSzwXCgs4DR1"; // free CoinGecko Demo API key (shared w/ AFTERSHIFT)
+const COINGECKO_KEY_PARAM = COINGECKO_DEMO_KEY ? `&x_cg_demo_api_key=${COINGECKO_DEMO_KEY}` : "";
+let priceData = {}; // coinId -> {usd}
+let calcSelectedCoin = null;
+let tSelectedCoin = null;
+
+/* ---------------- State ---------------- */
+let state = { trades: [], currency: 'USD', planScalpHours: 1, planIntradayHours: 24, planSwingDays: 14 };
+let idrRate = 16300; // fallback, replaced by live CoinGecko tether/idr rate
+let editingTradeId = null;
+let calcSide = 'long';
+let calcStrategy = 'scalp';
+let tradeModalSide = 'long';
+let selectedRR = 1;
+
+const $ = (id) => document.getElementById(id);
+
+const fmt = (nUsd) => {
+  const n = Number(nUsd)||0;
+  if(state.currency === 'IDR'){
+    return "Rp" + Math.round(n * idrRate).toLocaleString("id-ID");
+  }
+  return "$" + n.toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2});
+};
+const fmtCompact = (nUsd) => {
+  const n = Number(nUsd)||0;
+  if(state.currency === 'IDR'){
+    const idr = n * idrRate;
+    const abs = Math.abs(idr);
+    const sign = idr < 0 ? "-" : "";
+    if(abs >= 1e9) return sign + "Rp" + (abs/1e9).toFixed(2).replace('.',',') + " M";
+    if(abs >= 1e6) return sign + "Rp" + (abs/1e6).toFixed(2).replace('.',',') + " Jt";
+    return sign + "Rp" + Math.round(abs).toLocaleString("id-ID");
+  }
+  const abs = Math.abs(n);
+  const sign = n < 0 ? "-" : "";
+  if(abs >= 1e6) return sign + "$" + (abs/1e6).toFixed(2) + "M";
+  if(abs >= 1e3) return sign + "$" + (abs/1e3).toFixed(1) + "K";
+  return fmt(n);
+};
+const fmtPx = (nUsd) => {
+  let n = Number(nUsd)||0;
+  if(state.currency === 'IDR'){
+    const idr = n * idrRate;
+    if(idr === 0) return "Rp0";
+    if(idr < 1000) return "Rp" + idr.toFixed(2);
+    return "Rp" + Math.round(idr).toLocaleString("id-ID");
+  }
+  if(n === 0) return "$0.00";
+  if(n < 1) return "$" + n.toFixed(5);
+  return "$" + n.toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2});
+};
+function formatDuration(dateOpened, dateClosed){
+  if(!dateOpened) return '';
+  const end = dateClosed || Date.now();
+  const days = Math.floor((end-dateOpened)/86400000);
+  if(days < 1) return 'Hari ini';
+  if(days < 30) return days + ' hari';
+  const months = Math.floor(days/30);
+  return months + ' bulan';
+}
+
+/* ---------------- Storage ---------------- */
+const STORAGE_KEY = 'edge-journal-data';
+async function loadData(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(raw){
+      const parsed = JSON.parse(raw);
+      state = Object.assign({trades:[],currency:'USD',planScalpHours:1,planIntradayHours:24,planSwingDays:14}, parsed);
+    }
+  }catch(e){ /* no data yet */ }
+  updateCurToggleUI();
+  updateLabels();
+  updateStrategyHint();
+  renderAll();
+}
+async function saveData(){
+  try{
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  }catch(e){
+    showToast("Storage error — changes may not persist");
+  }
+}
+
+/* ---------------- Live IDR rate (public, no account needed) ---------------- */
+async function fetchWithRetry(url, retries=2, backoffMs=900){
+  for(let attempt=0; attempt<=retries; attempt++){
+    try{
+      const resp = await fetch(url);
+      if(resp.ok) return resp;
+      if(resp.status === 429 && attempt < retries){
+        await new Promise(r=>setTimeout(r, backoffMs * (attempt+1)));
+        continue;
+      }
+      throw new Error('HTTP '+resp.status);
+    }catch(e){
+      if(attempt < retries){
+        await new Promise(r=>setTimeout(r, backoffMs * (attempt+1)));
+        continue;
+      }
+      throw e;
+    }
+  }
+}
+
+async function fetchIdrRate(silent){
+  if(!silent) $('refreshBtn').classList.add('spin');
+  let ok = false;
+  try{
+    const ids = new Set(['tether']);
+    state.trades.forEach(t=>{ if(t.status==='open' && t.coinId) ids.add(t.coinId); });
+    const idsParam = Array.from(ids).join(',');
+    const resp = await fetchWithRetry(`${CG_BASE}/simple/price?ids=${idsParam}&vs_currencies=usd,idr${COINGECKO_KEY_PARAM}`);
+    const json = await resp.json();
+    if(json){
+      Object.keys(json).forEach(id=>{
+        priceData[id] = priceData[id] || {};
+        priceData[id].usd = json[id].usd;
+      });
+      if(json.tether && json.tether.idr && json.tether.usd){
+        idrRate = json.tether.idr / json.tether.usd;
+      }
+    }
+    ok = true;
+  }catch(e){ /* keep fallback/last known values */ }
+  if(!silent){
+    $('refreshBtn').classList.remove('spin');
+    showToast(ok ? "Harga & kurs diperbarui" : "Gagal ambil data terbaru — pakai data terakhir");
+  }
+  runCalculator();
+  renderAll();
+}
+$('refreshBtn').addEventListener('click', ()=> fetchIdrRate(false));
+
+/* ---------------- Coin search ---------------- */
+let searchDebounce;
+function localPresetMatches(q){
+  const ql = q.toLowerCase();
+  return PRESETS.filter(p => p.symbol.toLowerCase().includes(ql) || p.name.toLowerCase().includes(ql))
+    .map(p => ({id:p.id, symbol:p.symbol, name:p.name, image:''}));
+}
+function renderCoinRows(resultsEl, coins, onPick, inputEl){
+  resultsEl.innerHTML = '';
+  coins.forEach(c=>{
+    const row = document.createElement('div');
+    row.className = 'coin-item';
+    row.innerHTML = `<img src="${c.image||''}" onerror="this.style.display='none'"/>
+      <div><div class="coin-item-name">${c.name}</div><div class="coin-item-sym">${c.symbol}</div></div>`;
+    row.addEventListener('click', ()=>{
+      onPick({id:c.id, symbol:c.symbol, name:c.name, image:c.image});
+      resultsEl.style.display='none'; resultsEl.innerHTML=''; inputEl.value='';
+    });
+    resultsEl.appendChild(row);
+  });
+  resultsEl.style.display='block';
+}
+function wireCoinSearch(inputEl, resultsEl, selectedEl, onPick){
+  inputEl.addEventListener('input', ()=>{
+    clearTimeout(searchDebounce);
+    const q = inputEl.value.trim();
+    if(q.length < 2){ resultsEl.style.display='none'; resultsEl.innerHTML=''; return; }
+    const local = localPresetMatches(q);
+    if(local.length){ renderCoinRows(resultsEl, local, onPick, inputEl); }
+    else{ resultsEl.innerHTML = '<div class="coin-item" style="color:var(--muted);">Mencari...</div>'; resultsEl.style.display='block'; }
+    searchDebounce = setTimeout(async ()=>{
+      try{
+        const resp = await fetchWithRetry(`${CG_BASE}/search?query=${encodeURIComponent(q)}${COINGECKO_KEY_PARAM}`, 1, 700);
+        const json = await resp.json();
+        const coins = (json.coins||[]).slice(0,8).map(c=>({id:c.id, symbol:c.symbol.toUpperCase(), name:c.name, image:c.thumb}));
+        if(coins.length===0 && local.length===0){
+          resultsEl.innerHTML = '<div class="coin-item" style="color:var(--muted);">Tidak ditemukan — coba nama lengkap</div>';
+          resultsEl.style.display='block';
+          return;
+        }
+        if(coins.length){ renderCoinRows(resultsEl, coins, onPick, inputEl); }
+      }catch(e){
+        if(local.length===0){
+          resultsEl.innerHTML = '<div class="coin-item" style="color:var(--muted);">Live search gagal — coba lagi sebentar</div>';
+          resultsEl.style.display='block';
+        }
+      }
+    }, 350);
+  });
+}
+function showSelectedCoin(selectedEl, coin){
+  if(!coin){ selectedEl.style.display='none'; selectedEl.innerHTML=''; return; }
+  selectedEl.style.display='flex';
+  selectedEl.innerHTML = `<img src="${coin.image||''}" onerror="this.style.display='none'"/>
+    <span>${coin.name} <span style="color:var(--muted);">(${coin.symbol})</span></span>
+    <span class="coin-clear" data-clear-coin="1">Change</span>`;
+}
+
+/* ---------------- Currency toggle ---------------- */
+function updateCurToggleUI(){
+  const active = state.currency === 'IDR';
+  $('curSwitch').classList.toggle('active', active);
+  $('curLabelUsd').classList.toggle('on', !active);
+  $('curLabelIdr').classList.toggle('on', active);
+}
+function updateLabels(){
+  const unit = state.currency === 'IDR' ? '(Rp)' : '($)';
+  $('calcBalanceLabel').textContent = 'Account Balance ' + unit;
+  $('calcEntryLabel').textContent = 'Entry Price ' + unit;
+  $('calcSlLabel').textContent = 'Stop Loss ' + unit;
+  $('tSizeLabel').textContent = 'Position Size ' + unit;
+  $('tEntryLabel').textContent = 'Entry ' + unit;
+  $('tSlLabel').textContent = 'SL ' + unit;
+  $('tTpLabel').textContent = 'TP ' + unit;
+  $('tExitLabel').textContent = 'Harga Exit ' + unit + ' — isi untuk menutup trade';
+}
+$('curToggle').addEventListener('click', ()=>{
+  state.currency = state.currency === 'USD' ? 'IDR' : 'USD';
+  updateCurToggleUI();
+  updateLabels();
+  saveData();
+  runCalculator();
+  renderAll();
+});
+
+/* ---------------- Tabs ---------------- */
+document.querySelectorAll('.tab').forEach(t=>{
+  t.addEventListener('click', ()=>{
+    document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+    document.querySelectorAll('.view').forEach(x=>x.classList.remove('active'));
+    t.classList.add('active');
+    $('view-'+t.dataset.tab).classList.add('active');
+  });
+});
+
+/* ---------------- Calculator ---------------- */
+document.querySelectorAll('#view-calc .seg-opt[data-side]').forEach(o=>{
+  o.addEventListener('click', ()=>{
+    document.querySelectorAll('#view-calc .seg-opt[data-side]').forEach(x=>x.classList.remove('active'));
+    o.classList.add('active');
+    calcSide = o.dataset.side;
+    runCalculator();
+  });
+});
+document.querySelectorAll('#view-calc .seg-opt[data-strategy]').forEach(o=>{
+  o.addEventListener('click', ()=>{
+    document.querySelectorAll('#view-calc .seg-opt[data-strategy]').forEach(x=>x.classList.remove('active'));
+    o.classList.add('active');
+    calcStrategy = o.dataset.strategy;
+    updateStrategyHint();
+  });
+});
+function updateStrategyHint(){
+  const el = $('strategyHint');
+  if(calcStrategy === 'scalp'){
+    el.textContent = `Max hold: ${state.planScalpHours} jam · Timeframe disaranin: 1m–5m`;
+  }else if(calcStrategy === 'intraday'){
+    el.textContent = `Max hold: ${state.planIntradayHours} jam · Timeframe disaranin: 15m–1H`;
+  }else{
+    el.textContent = `Max hold: ${state.planSwingDays} hari · Timeframe disaranin: 4H–1D`;
+  }
+}
+document.querySelectorAll('.rr-chip').forEach(c=>{
+  c.addEventListener('click', ()=>{
+    document.querySelectorAll('.rr-chip').forEach(x=>x.classList.remove('active'));
+    c.classList.add('active');
+    selectedRR = parseFloat(c.dataset.rr);
+    runCalculator();
+  });
+});
+['calcBalance','calcRiskPct','calcEntry','calcSl'].forEach(id=>{
+  $(id).addEventListener('input', runCalculator);
+});
+
+let lastCalcResult = null;
+function runCalculator(){
+  const isIdr = state.currency === 'IDR';
+  const rate = isIdr ? idrRate : 1;
+  const balance = (parseFloat($('calcBalance').value)||0) / rate;
+  const riskPct = parseFloat($('calcRiskPct').value)||0;
+  const entry = (parseFloat($('calcEntry').value)||0) / rate;
+  const sl = (parseFloat($('calcSl').value)||0) / rate;
+
+  if(balance<=0 || entry<=0 || sl<=0 || riskPct<=0 || entry===sl){
+    $('resultGrid').style.display = 'none';
+    $('saveToJournalBtn').style.display = 'none';
+    lastCalcResult = null;
+    return;
+  }
+  const validDirection = calcSide==='long' ? sl < entry : sl > entry;
+  if(!validDirection){
+    $('calcHint').textContent = calcSide==='long'
+      ? '⚠ Untuk Long, SL harus di bawah Entry.'
+      : '⚠ Untuk Short, SL harus di atas Entry.';
+    $('calcHint').style.color = 'var(--neg)';
+    $('resultGrid').style.display = 'none';
+    $('saveToJournalBtn').style.display = 'none';
+    lastCalcResult = null;
+    return;
+  }
+  $('calcHint').style.color = 'var(--muted2)';
+  $('calcHint').textContent = 'Isi Entry & SL yang udah kamu tentuin — TP dan ukuran posisi dihitung otomatis dari situ.';
+
+  const riskAmount = balance * (riskPct/100);
+  const riskPerUnit = Math.abs(entry - sl);
+  const positionUnits = riskAmount / riskPerUnit;
+  const notional = positionUnits * entry;
+  const tp = calcSide==='long' ? entry + riskPerUnit*selectedRR : entry - riskPerUnit*selectedRR;
+  const reward = riskAmount * selectedRR;
+
+  $('resultGrid').style.display = 'grid';
+  $('saveToJournalBtn').style.display = 'block';
+  $('resTp').textContent = fmtPx(tp);
+  $('resRisk').textContent = '-' + fmt(riskAmount);
+  $('resSize').textContent = positionUnits.toLocaleString('en-US',{maximumFractionDigits:6}) + ' units';
+  $('resReward').textContent = '+' + fmt(reward);
+  $('resNotional').textContent = fmt(notional);
+
+  lastCalcResult = {
+    side: calcSide, strategy: calcStrategy, symbol: calcSelectedCoin ? calcSelectedCoin.symbol : '',
+    coinId: calcSelectedCoin ? calcSelectedCoin.id : null, coinImage: calcSelectedCoin ? calcSelectedCoin.image : '',
+    entry, sl, tp, positionUnits, notional, riskAmount, rr: selectedRR
+  };
+}
+
+wireCoinSearch($('calcSymbol'), $('calcCoinResults'), $('calcCoinSelected'), (coin)=>{
+  calcSelectedCoin = coin;
+  showSelectedCoin($('calcCoinSelected'), coin);
+});
+$('calcCoinSelected').addEventListener('click', (e)=>{
+  if(e.target.dataset.clearCoin){ calcSelectedCoin=null; showSelectedCoin($('calcCoinSelected'), null); }
+});
+
+$('saveToJournalBtn').addEventListener('click', ()=>{
+  if(!lastCalcResult) return;
+  openTradeModal(null, lastCalcResult);
+});
+
+/* ---------------- Journal rendering ---------------- */
+function getMaxHoldMs(strategy){
+  if(strategy === 'scalp') return (state.planScalpHours||1) * 3600000;
+  if(strategy === 'intraday') return (state.planIntradayHours||24) * 3600000;
+  return (state.planSwingDays||14) * 86400000;
+}
+function strategyLabel(strategy){
+  if(strategy === 'scalp') return 'Scalp';
+  if(strategy === 'intraday') return 'Intraday';
+  return 'Swing';
+}
+function getHoldStatus(t){
+  const strategy = t.strategy || 'scalp';
+  const maxMs = getMaxHoldMs(strategy);
+  const elapsedMs = (t.status==='closed' ? t.dateClosed : Date.now()) - t.dateOpened;
+  const overrun = elapsedMs > maxMs;
+  const approaching = !overrun && elapsedMs >= maxMs * 0.8;
+  const elapsedLabel = formatDuration(t.dateOpened, t.status==='closed' ? t.dateClosed : Date.now());
+  if(t.status==='open'){
+    if(overrun) return { cls:'over', text:`🔴 Lewat batas ${strategyLabel(strategy)} (${elapsedLabel}) — evaluasi ulang` };
+    if(approaching) return { cls:'warn', text:`🟡 Mendekati batas ${strategyLabel(strategy)} (${elapsedLabel}) — siap-siap evaluasi` };
+    return { cls:'ok', text:`⏱ ${elapsedLabel} dipegang · sesuai rencana` };
+  }
+  return overrun
+    ? { cls:'over', text:`⚠ Ditutup setelah ${elapsedLabel} — lewat rencana ${strategyLabel(strategy)}` }
+    : { cls:'ok', text:`✓ Ditutup dalam ${elapsedLabel} — sesuai rencana` };
+}
+
+function computeFloatingPnl(t){
+  if(!t.coinId || !priceData[t.coinId] || typeof priceData[t.coinId].usd !== 'number') return null;
+  const livePrice = priceData[t.coinId].usd;
+  const riskPerUnit = Math.abs(t.entry - t.sl);
+  if(riskPerUnit<=0 || !t.entry) return null;
+  const units = t.notional / t.entry;
+  const priceDiff = t.side==='long' ? (livePrice - t.entry) : (t.entry - livePrice);
+  const pnl = units * priceDiff;
+  const r = priceDiff / riskPerUnit;
+  return { livePrice, pnl, r };
+}
+
+function renderJournal(){
+  const list = $('journalList');
+  const search = ($('jSearch').value||'').toLowerCase();
+  const filter = $('jFilter').value;
+  let items = [...state.trades];
+  if(search) items = items.filter(t=>t.symbol.toLowerCase().includes(search));
+  if(filter==='open') items = items.filter(t=>t.status==='open');
+  if(filter==='closed') items = items.filter(t=>t.status==='closed');
+  items.sort((a,b)=>b.dateOpened - a.dateOpened);
+
+  list.innerHTML = '';
+  $('journalEmpty').style.display = state.trades.length===0 ? 'block' : 'none';
+
+  items.forEach(t=>{
+    const card = document.createElement('div');
+    card.className = 'trade-card';
+    const strategy = t.strategy || 'scalp';
+    const holdStatus = getHoldStatus(t);
+    let resultHtml = '';
+    if(t.status==='closed'){
+      const rColor = t.resultR>=0 ? 'var(--pos)' : 'var(--neg)';
+      resultHtml = `
+        <div class="trade-result">
+          <span class="trade-r mono" style="color:${rColor}">${t.resultR>=0?'+':''}${t.resultR.toFixed(2)}R · ${t.resultR>=0?'+':''}${fmtCompact(t.resultPnl)}</span>
+        </div>`;
+    }
+    let floatingHtml = '';
+    if(t.status==='open'){
+      const fp = computeFloatingPnl(t);
+      if(fp){
+        const fColor = fp.pnl>=0 ? 'var(--pos)' : 'var(--neg)';
+        floatingHtml = `
+          <div class="floating-pnl">
+            <span class="fp-label">Floating @ ${fmtPx(fp.livePrice)}</span>
+            <span style="color:${fColor}">${fp.pnl>=0?'+':''}${fp.r.toFixed(2)}R · ${fp.pnl>=0?'+':''}${fmtCompact(fp.pnl)}</span>
+          </div>`;
+      }
+    }
+    card.innerHTML = `
+      <div class="trade-top">
+        <span class="trade-side ${t.side}">${t.side.toUpperCase()}</span>
+        <span class="strategy-badge ${strategy}">${strategy.toUpperCase()}</span>
+        <span class="trade-sym">${t.symbol || '—'}</span>
+        <span class="trade-status">${t.status==='open'?'OPEN':'CLOSED'}</span>
+      </div>
+      <div class="trade-sub">Entry ${fmtPx(t.entry)} · SL ${fmtPx(t.sl)} · TP ${fmtPx(t.tp)}</div>
+      <div class="hold-status ${holdStatus.cls}">${holdStatus.text}</div>
+      ${t.thesis ? `<div class="trade-thesis">${t.thesis}</div>` : ''}
+      ${floatingHtml}
+      ${resultHtml}
+    `;
+    card.addEventListener('click', ()=> openTradeModal(t.id));
+    list.appendChild(card);
+  });
+}
+
+/* ---------------- Stats rendering ---------------- */
+function renderStats(){
+  const closed = state.trades.filter(t=>t.status==='closed');
+  $('statTotal').textContent = state.trades.length;
+
+  if(closed.length===0){
+    $('statWinRate').textContent = '—';
+    $('statAvgWin').textContent = '—';
+    $('statAvgLoss').textContent = '—';
+    $('statExpectancy').textContent = '—';
+    $('statTotalR').textContent = '—';
+    $('equityCanvas').style.display = 'none';
+    $('equityEmpty').style.display = 'block';
+    $('strategyBreakdownPanel').style.display = 'none';
+    return;
+  }
+
+  const wins = closed.filter(t=>t.resultR > 0);
+  const losses = closed.filter(t=>t.resultR <= 0);
+  const winRate = (wins.length/closed.length*100);
+  const avgWin = wins.length ? wins.reduce((s,t)=>s+t.resultR,0)/wins.length : 0;
+  const avgLoss = losses.length ? losses.reduce((s,t)=>s+t.resultR,0)/losses.length : 0;
+  const totalR = closed.reduce((s,t)=>s+t.resultR,0);
+  const expectancy = totalR/closed.length;
+
+  $('statWinRate').textContent = winRate.toFixed(0) + '%';
+  $('statAvgWin').textContent = '+' + avgWin.toFixed(2) + 'R';
+  $('statAvgLoss').textContent = avgLoss.toFixed(2) + 'R';
+  $('statExpectancy').textContent = (expectancy>=0?'+':'') + expectancy.toFixed(2) + 'R';
+  $('statExpectancy').className = 'stat-value mono ' + (expectancy>=0?'pos':'neg');
+  $('statTotalR').textContent = (totalR>=0?'+':'') + totalR.toFixed(2) + 'R';
+  $('statTotalR').className = 'stat-value mono ' + (totalR>=0?'pos':'neg');
+
+  renderStrategyBreakdown(closed);
+  drawEquityCurve(closed);
+}
+
+function renderStrategyBreakdown(closed){
+  $('strategyBreakdownPanel').style.display = 'block';
+  function summarize(list){
+    if(list.length===0) return 'Belum ada trade closed';
+    const w = list.filter(t=>t.resultR>0).length;
+    const wr = (w/list.length*100).toFixed(0);
+    const avgR = list.reduce((s,t)=>s+t.resultR,0)/list.length;
+    return `${list.length} trade · ${wr}% win · ${avgR>=0?'+':''}${avgR.toFixed(2)}R avg`;
+  }
+  const scalpTrades = closed.filter(t=>(t.strategy||'scalp')==='scalp');
+  const intradayTrades = closed.filter(t=>t.strategy==='intraday');
+  const swingTrades = closed.filter(t=>t.strategy==='swing');
+  $('statScalpSummary').textContent = summarize(scalpTrades);
+  $('statIntradaySummary').textContent = summarize(intradayTrades);
+  $('statSwingSummary').textContent = summarize(swingTrades);
+}
+
+function drawEquityCurve(closed){
+  const sorted = [...closed].sort((a,b)=>a.dateClosed - b.dateClosed);
+  const c = $('equityCanvas'); const ctx = c.getContext('2d');
+  const w=c.width, h=c.height;
+  ctx.clearRect(0,0,w,h);
+  $('equityCanvas').style.display = 'block';
+  $('equityEmpty').style.display = 'none';
+
+  let cumR = 0;
+  const points = [0];
+  sorted.forEach(t=>{ cumR += t.resultR; points.push(cumR); });
+
+  const min = Math.min(...points, 0), max = Math.max(...points, 0);
+  const pad = 14;
+  const range = (max-min) || 1;
+  const stepX = (w-pad*2) / (points.length-1 || 1);
+
+  ctx.beginPath();
+  points.forEach((p,i)=>{
+    const x = pad + i*stepX;
+    const y = h - pad - ((p-min)/range)*(h-pad*2);
+    if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+  });
+  const grad = ctx.createLinearGradient(0,0,0,h);
+  grad.addColorStop(0,'rgba(74,200,240,0.35)');
+  grad.addColorStop(1,'rgba(74,200,240,0)');
+  ctx.lineTo(pad+(points.length-1)*stepX, h-pad);
+  ctx.lineTo(pad, h-pad);
+  ctx.closePath();
+  ctx.fillStyle = grad;
+  ctx.fill();
+
+  ctx.beginPath();
+  points.forEach((p,i)=>{
+    const x = pad + i*stepX;
+    const y = h - pad - ((p-min)/range)*(h-pad*2);
+    if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+  });
+  ctx.strokeStyle = '#4ac8f0';
+  ctx.lineWidth = 3;
+  ctx.lineJoin='round';
+  ctx.stroke();
+
+  const lastX = pad+(points.length-1)*stepX;
+  const lastY = h - pad - ((points[points.length-1]-min)/range)*(h-pad*2);
+  ctx.beginPath();
+  ctx.arc(lastX,lastY,5,0,Math.PI*2);
+  ctx.fillStyle = '#4ac8f0';
+  ctx.shadowColor = '#4ac8f0'; ctx.shadowBlur = 10;
+  ctx.fill();
+  ctx.shadowBlur = 0;
+}
+
+function renderAll(){
+  renderJournal();
+  renderStats();
+}
+
+/* ---------------- Trade modal ---------------- */
+let tradeModalStrategy = 'scalp';
+function setTradeSide(side){
+  tradeModalSide = side;
+  document.querySelectorAll('#tradeOverlay .seg-opt[data-tside]').forEach(o=>o.classList.toggle('active', o.dataset.tside===side));
+}
+function setTradeStrategy(strategy){
+  tradeModalStrategy = strategy;
+  document.querySelectorAll('#tradeOverlay .seg-opt[data-tstrategy]').forEach(o=>o.classList.toggle('active', o.dataset.tstrategy===strategy));
+}
+document.querySelectorAll('#tradeOverlay .seg-opt[data-tside]').forEach(o=>{
+  o.addEventListener('click', ()=> setTradeSide(o.dataset.tside));
+});
+document.querySelectorAll('#tradeOverlay .seg-opt[data-tstrategy]').forEach(o=>{
+  o.addEventListener('click', ()=> setTradeStrategy(o.dataset.tstrategy));
+});
+
+function openTradeModal(tradeId, prefill){
+  editingTradeId = tradeId || null;
+  const isIdr = state.currency === 'IDR';
+  const rate = isIdr ? idrRate : 1;
+  const existing = tradeId ? state.trades.find(t=>t.id===tradeId) : null;
+
+  $('tradeSheetTitle').textContent = existing ? 'Edit Trade' : 'Tambah Trade';
+  $('tDelete').style.display = existing ? 'block' : 'none';
+  $('tExitField').style.display = existing ? 'block' : 'none';
+  $('tCloseTradeBtn').style.display = (existing && existing.status==='open') ? 'block' : 'none';
+  $('tSave').textContent = existing ? 'Update Trade' : 'Simpan Trade';
+
+  if(existing){
+    setTradeSide(existing.side);
+    setTradeStrategy(existing.strategy || 'scalp');
+    tSelectedCoin = existing.coinId ? {id:existing.coinId, symbol:existing.symbol, name:existing.symbol, image:existing.coinImage||''} : null;
+    $('tSymbol').value = existing.coinId ? '' : (existing.symbol || '');
+    $('tCoinResults').style.display='none';
+    showSelectedCoin($('tCoinSelected'), tSelectedCoin);
+    $('tSize').value = isIdr ? Math.round(existing.notional*rate) : existing.notional;
+    $('tEntry').value = isIdr ? Math.round(existing.entry*rate) : existing.entry;
+    $('tSl').value = isIdr ? Math.round(existing.sl*rate) : existing.sl;
+    $('tTp').value = isIdr ? Math.round(existing.tp*rate) : existing.tp;
+    $('tThesis').value = existing.thesis || '';
+    $('tExit').value = existing.exitPrice ? (isIdr ? Math.round(existing.exitPrice*rate) : existing.exitPrice) : '';
+  }else if(prefill){
+    setTradeSide(prefill.side);
+    setTradeStrategy(prefill.strategy || 'scalp');
+    tSelectedCoin = prefill.coinId ? {id:prefill.coinId, symbol:prefill.symbol, name:prefill.symbol, image:prefill.coinImage||''} : null;
+    $('tSymbol').value = ''; $('tCoinResults').style.display='none';
+    showSelectedCoin($('tCoinSelected'), tSelectedCoin);
+    $('tSize').value = isIdr ? Math.round(prefill.notional*rate) : Math.round(prefill.notional*100)/100;
+    $('tEntry').value = isIdr ? Math.round(prefill.entry*rate) : prefill.entry;
+    $('tSl').value = isIdr ? Math.round(prefill.sl*rate) : prefill.sl;
+    $('tTp').value = isIdr ? Math.round(prefill.tp*rate) : prefill.tp;
+    $('tThesis').value = '';
+    $('tExit').value = '';
+  }else{
+    setTradeSide('long');
+    setTradeStrategy('scalp');
+    tSelectedCoin = null;
+    $('tSymbol').value = ''; $('tCoinResults').style.display='none';
+    showSelectedCoin($('tCoinSelected'), null);
+    $('tSize').value = '';
+    $('tEntry').value = '';
+    $('tSl').value = '';
+    $('tTp').value = '';
+    $('tThesis').value = '';
+    $('tExit').value = '';
+  }
+  $('tradeOverlay').classList.add('show');
+}
+wireCoinSearch($('tSymbol'), $('tCoinResults'), $('tCoinSelected'), (coin)=>{
+  tSelectedCoin = coin;
+  showSelectedCoin($('tCoinSelected'), coin);
+});
+$('tCoinSelected').addEventListener('click', (e)=>{
+  if(e.target.dataset.clearCoin){ tSelectedCoin=null; showSelectedCoin($('tCoinSelected'), null); }
+});
+
+$('fabAdd').addEventListener('click', ()=> openTradeModal(null));
+$('tradeClose').addEventListener('click', ()=> $('tradeOverlay').classList.remove('show'));
+
+$('tSave').addEventListener('click', ()=>{
+  const isIdr = state.currency === 'IDR';
+  const rate = isIdr ? idrRate : 1;
+  const symbol = tSelectedCoin ? tSelectedCoin.symbol : $('tSymbol').value.trim().toUpperCase();
+  const notional = (parseFloat($('tSize').value)||0) / rate;
+  const entry = (parseFloat($('tEntry').value)||0) / rate;
+  const sl = (parseFloat($('tSl').value)||0) / rate;
+  const tp = (parseFloat($('tTp').value)||0) / rate;
+  const thesis = $('tThesis').value.trim();
+
+  if(!symbol){ showToast("Symbol wajib diisi — cari & pilih coin dulu"); return; }
+  if(entry<=0 || sl<=0){ showToast("Entry dan SL wajib diisi"); return; }
+
+  const existing = editingTradeId ? state.trades.find(t=>t.id===editingTradeId) : null;
+  const obj = existing ? {...existing} : {
+    id: 't'+Date.now()+Math.random().toString(36).slice(2,7),
+    dateOpened: Date.now(),
+    status: 'open'
+  };
+  obj.side = tradeModalSide;
+  obj.strategy = tradeModalStrategy;
+  obj.symbol = symbol;
+  obj.coinId = tSelectedCoin ? tSelectedCoin.id : (existing ? existing.coinId : null);
+  obj.coinImage = tSelectedCoin ? tSelectedCoin.image : (existing ? existing.coinImage : '');
+  obj.notional = notional;
+  obj.entry = entry;
+  obj.sl = sl;
+  obj.tp = tp;
+  obj.thesis = thesis;
+
+  if(existing){
+    const idx = state.trades.findIndex(t=>t.id===editingTradeId);
+    state.trades[idx] = obj;
+  }else{
+    state.trades.push(obj);
+  }
+  saveData();
+  $('tradeOverlay').classList.remove('show');
+  showToast(existing ? "Trade diupdate" : "Trade disimpan");
+  renderAll();
+});
+
+$('tCloseTradeBtn').addEventListener('click', ()=>{
+  const isIdr = state.currency === 'IDR';
+  const rate = isIdr ? idrRate : 1;
+  const exitRaw = parseFloat($('tExit').value)||0;
+  if(exitRaw<=0){ showToast("Isi harga exit dulu"); return; }
+  const exitPrice = exitRaw / rate;
+
+  const existing = editingTradeId ? state.trades.find(t=>t.id===editingTradeId) : null;
+  if(!existing){ showToast("Simpan trade dulu sebelum ditutup"); return; }
+
+  const riskPerUnit = Math.abs(existing.entry - existing.sl);
+  const units = riskPerUnit>0 ? (existing.notional / existing.entry) : 0;
+  const priceDiff = existing.side==='long' ? (exitPrice - existing.entry) : (existing.entry - exitPrice);
+  const pnl = units * priceDiff;
+  const resultR = riskPerUnit>0 ? (priceDiff / riskPerUnit) : 0;
+
+  existing.status = 'closed';
+  existing.exitPrice = exitPrice;
+  existing.dateClosed = Date.now();
+  existing.resultPnl = pnl;
+  existing.resultR = resultR;
+
+  saveData();
+  $('tradeOverlay').classList.remove('show');
+  showToast("Trade ditutup — " + (resultR>=0?'+':'') + resultR.toFixed(2) + "R dicatat");
+  renderAll();
+});
+
+$('tDelete').addEventListener('click', ()=>{
+  if(!editingTradeId) return;
+  if(!confirm("Hapus trade ini? Nggak bisa dibalikin.")) return;
+  state.trades = state.trades.filter(t=>t.id!==editingTradeId);
+  saveData();
+  $('tradeOverlay').classList.remove('show');
+  showToast("Trade dihapus");
+  renderAll();
+});
+
+/* ---------------- Journal filters ---------------- */
+$('jSearch').addEventListener('input', renderJournal);
+$('jFilter').addEventListener('change', renderJournal);
+
+/* ---------------- Misc ---------------- */
+document.querySelectorAll('.overlay').forEach(ov=>{
+  ov.addEventListener('click', (e)=>{ if(e.target===ov) ov.classList.remove('show'); });
+});
+
+let toastTimer;
+function showToast(msg){
+  const t = $('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=> t.classList.remove('show'), 2400);
+}
+
+/* ---------------- Backup & Restore ---------------- */
+$('menuBtn').addEventListener('click', ()=> $('menuOverlay').classList.add('show'));
+$('menuClose').addEventListener('click', ()=> $('menuOverlay').classList.remove('show'));
+
+$('openPlanBtn').addEventListener('click', ()=>{
+  $('planScalpHours').value = state.planScalpHours;
+  $('planIntradayHours').value = state.planIntradayHours;
+  $('planSwingDays').value = state.planSwingDays;
+  $('menuOverlay').classList.remove('show');
+  $('planOverlay').classList.add('show');
+});
+$('planClose').addEventListener('click', ()=> $('planOverlay').classList.remove('show'));
+$('planSave').addEventListener('click', ()=>{
+  const scalpH = parseFloat($('planScalpHours').value)||1;
+  const intradayH = parseFloat($('planIntradayHours').value)||24;
+  const swingD = parseFloat($('planSwingDays').value)||14;
+  state.planScalpHours = scalpH;
+  state.planIntradayHours = intradayH;
+  state.planSwingDays = swingD;
+  saveData();
+  updateStrategyHint();
+  renderAll();
+  $('planOverlay').classList.remove('show');
+  showToast("Trading plan disimpan");
+});
+
+$('exportBtn').addEventListener('click', ()=>{
+  try{
+    const json = JSON.stringify(state, null, 2);
+    const blob = new Blob([json], {type:'application/json'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    const dateStr = new Date().toISOString().slice(0,10);
+    a.href = url;
+    a.download = `edge-journal-backup-${dateStr}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    showToast("Backup di-download");
+  }catch(e){
+    showToast("Export gagal — coba lagi");
+  }
+});
+$('importBtn').addEventListener('click', ()=> $('importFile').click());
+$('importFile').addEventListener('change', (e)=>{
+  const file = e.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = (ev)=>{
+    try{
+      const parsed = JSON.parse(ev.target.result);
+      if(!parsed || !Array.isArray(parsed.trades)){
+        showToast("File tidak valid — bukan file backup EDGE");
+        return;
+      }
+      if(!confirm("Import akan menimpa semua data saat ini. Lanjutkan?")) return;
+      state = Object.assign({trades:[],currency:'USD',planScalpHours:1,planIntradayHours:24,planSwingDays:14}, parsed);
+      saveData();
+      updateCurToggleUI();
+      updateLabels();
+      renderAll();
+      $('menuOverlay').classList.remove('show');
+      showToast("Backup berhasil di-import");
+    }catch(err){
+      showToast("File rusak atau bukan format JSON yang benar");
+    }
+    $('importFile').value = '';
+  };
+  reader.readAsText(file);
+});
+
+/* ---------------- Init ---------------- */
+loadData().then(()=>fetchIdrRate(true));
+</script>
+</body>
+</html>
